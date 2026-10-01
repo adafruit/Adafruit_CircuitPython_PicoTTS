@@ -12,7 +12,7 @@ requires = [
 
 [project]
 name = "adafruit-circuitpython-picotts"
-description = "Text to speech for CircuitPython using the SVOX Pico engine in the picotts core module"
+description = "Text to speech for CircuitPython using the SVOX Pico engine, rendered through audiomixer"
 version = "0.0.0+auto.0"
 readme = "README.rst"
 authors = [

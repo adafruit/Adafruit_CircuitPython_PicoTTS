@@ -22,24 +22,24 @@ Introduction
     :alt: Code Style: Ruff
 
 Text to speech for CircuitPython using the `SVOX Pico <https://github.com/lllucius/esp32_picotts>`_
-engine by SVOX AG, released under the Apache License 2.0. It speaks English (en-US) at 16 kHz
-and handles numbers, abbreviations and dates on the board.
+engine by SVOX AG, released under the Apache License 2.0. It speaks English (en-US) at 16 kHz,
+handles numbers, abbreviations and dates on the board, and plays through ``audiomixer``. The
+engine and voice ship in the library, so it runs on stock CircuitPython with no core module.
 
-The engine is built into the firmware as the ``picotts`` core module. The voice is two files,
-``en-US_ta.bin`` and ``en-US_lh0_sg.bin`` (1.43 MB), copied to ``/voices`` on CIRCUITPY and
-loaded into RAM. This library will add a higher level API on top of it. For now, see the
-examples for using ``picotts`` directly.
+``say()`` waits until the text has been spoken. ``say(text, wait=False)`` returns right away;
+call ``update()`` from your main loop to keep speaking.
 
 
 Dependencies
 =============
 This library depends on:
 
-* `Adafruit CircuitPython <https://github.com/adafruit/circuitpython>`_ firmware built with the
-  ``picotts`` core module
+* `Adafruit CircuitPython <https://github.com/adafruit/circuitpython>`_ 11 or later
 
-The engine needs about 1.1 MB of RAM and the voice another 1.43 MB, about 2.5 MB in all, so
-``picotts`` needs a board with PSRAM:
+The engine is a precompiled native module, ``picotts_native.armv7emsp.mpy``, for the RP2350.
+The engine needs about 1.1 MB of RAM and the en-US voice (``en-US_ta.bin`` and
+``en-US_lh0_sg.bin``, in the library) another 1.43 MB, about 2.5 MB in all, so it needs a
+board with PSRAM:
 
 ================================  ===================================
 Board                             Status
@@ -84,30 +84,41 @@ Usage Example
 
 .. code-block:: python
 
-    import array
-    import os
+    import audiobusio
+    import board
 
-    import picotts
+    import adafruit_picotts as speech
 
+    audio = audiobusio.I2SOut(board.D9, board.D10, board.D11)
+    tts = speech.TTS(audio)
+    tts.say("Hello from Circuit Python.")
 
-    def load(path):
-        buf = bytearray(os.stat(path)[6])
-        with open(path, "rb") as f:
-            f.readinto(buf)
-        return buf
+See ``examples/picotts_fruitjam.py`` for the Fruit Jam's TLV320 DAC.
 
+Speed and memory
+================
 
-    engine = picotts.Engine(load("/voices/en-US_ta.bin"), load("/voices/en-US_lh0_sg.bin"))
-    engine.start("Hello from Circuit Python.")
-    out = array.array("h", [0]) * (16000 * 4)
-    n = 0
-    while engine.speaking and n < len(out):
-        n += engine.render(memoryview(out)[n:])
-    # out[:n] now holds 16 kHz mono speech, ready for audiocore.RawSample
+Rendering takes about 0.6 times real time on the RP2350, but the engine analyzes each sentence
+before any of it is spoken, which takes from under a second to several seconds for a long
+sentence. ``TTS`` fills a buffer before it starts playing, so a sentence of up to 15 s plays
+without a break.
 
-The engine keeps references to both buffers and reads the voice from them in place, so they stay
-in RAM until ``engine.deinit()``. See ``examples/picotts_fruitjam_simpletest.py`` for playback on the
-Fruit Jam and ``examples/picotts_feather_max98357.py`` for a Feather with a MAX98357A amp.
+``TTS()`` loads the voice and allocates its buffers once, taking the largest block the heap
+allows for the speech buffer (up to 30 s of audio, 960 KB). Create it early, before other large
+allocations.
+
+Building the engine
+===================
+
+``src/svox`` is the SVOX Pico engine source. ``src/Makefile`` builds it with
+``py/dynruntime.mk`` into ``adafruit_picotts/picotts_native.<arch>.mpy``:
+
+.. code-block:: shell
+
+    cd src
+    make MPY_DIR=path/to/circuitpython ARCH=armv7emsp
+
+Use the CircuitPython tree of the version the file will run on.
 
 Credits
 =======
