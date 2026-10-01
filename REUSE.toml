@@ -1,0 +1,7 @@
+version = 1
+
+# SVOX Pico engine, third-party code kept as-is apart from platform guards (see src/svox/NOTICE).
+[[annotations]]
+path = "src/svox/**"
+SPDX-FileCopyrightText = "2008-2009 SVOX AG"
+SPDX-License-Identifier = "Apache-2.0"

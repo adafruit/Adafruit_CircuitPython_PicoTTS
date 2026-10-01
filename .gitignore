@@ -46,3 +46,6 @@ _build
 .idea
 .vscode
 *~
+
+# Prebuilt native engine, one per architecture (built by src/Makefile)
+!adafruit_picotts/picotts_native.*.mpy
