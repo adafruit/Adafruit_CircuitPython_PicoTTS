@@ -37,8 +37,8 @@ This library depends on:
 * `Adafruit CircuitPython <https://github.com/adafruit/circuitpython>`_ 11 or later
 
 The engine is a precompiled native module, ``picotts_native.armv7emsp.mpy``, for the RP2350.
-The engine needs about 1.1 MB of RAM and the en-US voice (``en-US_ta.bin`` and
-``en-US_lh0_sg.bin``, in the library) another 1.43 MB, about 2.5 MB in all, so it needs a
+The engine needs about 1.1 MB of RAM and the en-US voice (``en_US_ta.bin`` and
+``en_US_lh0_sg.bin``, in the library) another 1.43 MB, about 2.5 MB in all, so it needs a
 board with PSRAM:
 
 ================================  ===================================

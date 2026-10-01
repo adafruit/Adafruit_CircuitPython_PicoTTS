@@ -66,7 +66,7 @@ _VOICES = ("en-US",)
 # system overhead.
 _MEMORY_SIZE = 1100000
 _VOICE_DIR = __file__.rsplit("/", 1)[0]
-_VOICE_FILES = {"en-US": ("en-US_ta.bin", "en-US_lh0_sg.bin")}
+_VOICE_FILES = {"en-US": ("en_US_ta.bin", "en_US_lh0_sg.bin")}
 
 
 def _load(path):
