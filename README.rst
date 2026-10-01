@@ -25,9 +25,10 @@ Text to speech for CircuitPython using the `SVOX Pico <https://github.com/llluci
 engine by SVOX AG, released under the Apache License 2.0. It speaks English (en-US) at 16 kHz
 and handles numbers, abbreviations and dates on the board.
 
-The engine and its 1.4 MB voice are built into the firmware as the ``picotts`` core module. This
-library will add a higher level API on top of it. For now, see the example for using
-``picotts`` directly.
+The engine is built into the firmware as the ``picotts`` core module. The voice is two files,
+``en-US_ta.bin`` and ``en-US_lh0_sg.bin`` (1.43 MB), copied to ``/voices`` on CIRCUITPY and
+loaded into RAM. This library will add a higher level API on top of it. For now, see the
+examples for using ``picotts`` directly.
 
 
 Dependencies
@@ -37,14 +38,15 @@ This library depends on:
 * `Adafruit CircuitPython <https://github.com/adafruit/circuitpython>`_ firmware built with the
   ``picotts`` core module
 
-The engine needs about 1.1 MB of RAM and the voice about 1.4 MB of firmware flash, so
-``picotts`` is only enabled on boards with PSRAM and room for it:
+The engine needs about 1.1 MB of RAM and the voice another 1.43 MB, about 2.5 MB in all, so
+``picotts`` needs a board with PSRAM:
 
-======================  =============================================
-Board                   Status
-======================  =============================================
-Fruit Jam (RP2350)      Working
-======================  =============================================
+================================  ===================================
+Board                             Status
+================================  ===================================
+Fruit Jam (RP2350)                Working
+Feather RP2350 with 8 MB PSRAM    Runs, audio check pending
+================================  ===================================
 
 This library does not run on Blinka.
 
@@ -83,10 +85,19 @@ Usage Example
 .. code-block:: python
 
     import array
+    import os
 
     import picotts
 
-    engine = picotts.Engine()
+
+    def load(path):
+        buf = bytearray(os.stat(path)[6])
+        with open(path, "rb") as f:
+            f.readinto(buf)
+        return buf
+
+
+    engine = picotts.Engine(load("/voices/en-US_ta.bin"), load("/voices/en-US_lh0_sg.bin"))
     engine.start("Hello from Circuit Python.")
     out = array.array("h", [0]) * (16000 * 4)
     n = 0
@@ -94,7 +105,9 @@ Usage Example
         n += engine.render(memoryview(out)[n:])
     # out[:n] now holds 16 kHz mono speech, ready for audiocore.RawSample
 
-See ``examples/picotts_fruitjam_simpletest.py`` for playback on the Fruit Jam.
+The engine keeps references to both buffers and reads the voice from them in place, so they stay
+in RAM until ``engine.deinit()``. See ``examples/picotts_fruitjam_simpletest.py`` for playback on the
+Fruit Jam and ``examples/picotts_feather_max98357.py`` for a Feather with a MAX98357A amp.
 
 Credits
 =======
