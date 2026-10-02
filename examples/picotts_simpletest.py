@@ -3,7 +3,7 @@
 """Speak a few phrases through an I2S amplifier.
 
 Needs a board with PSRAM, such as a Feather RP2350 with 8 MB PSRAM, and a MAX98357A amp:
-BCLK to D9, LRC to D10, DIN to D11. For the Fruit Jam, see picotts_fruitjam.py.
+BCLK to A0, LRC to A1, DIN to A2. For the Fruit Jam, see picotts_fruitjam.py.
 """
 
 import time
@@ -13,8 +13,9 @@ import board
 
 import adafruit_picotts as speech
 
-# On the RP2350, bit clock and word select must be consecutive GPIOs: D9 and D10.
-audio = audiobusio.I2SOut(board.D9, board.D10, board.D11)
+# On the RP2350, bit clock and word select must be consecutive GPIOs: A0 and A1 are GPIO26
+# and GPIO27.
+audio = audiobusio.I2SOut(board.A0, board.A1, board.A2)
 
 tts = speech.TTS(audio)
 

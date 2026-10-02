@@ -1,8 +1,8 @@
 Simple test
 ------------
 
-Ensure your device works with this simple test. It speaks through a MAX98357A I2S amp on D9,
-D10 and D11 of a board with PSRAM, such as a Feather RP2350 with 8 MB PSRAM.
+Ensure your device works with this simple test. It speaks through a MAX98357A I2S amp on A0,
+A1 and A2 of a board with PSRAM, such as a Feather RP2350 with 8 MB PSRAM.
 
 .. literalinclude:: ../examples/picotts_simpletest.py
     :caption: examples/picotts_simpletest.py

@@ -89,7 +89,7 @@ Usage Example
 
     import adafruit_picotts as speech
 
-    audio = audiobusio.I2SOut(board.D9, board.D10, board.D11)
+    audio = audiobusio.I2SOut(board.A0, board.A1, board.A2)
     tts = speech.TTS(audio)
     tts.say("Hello from Circuit Python.")
 
